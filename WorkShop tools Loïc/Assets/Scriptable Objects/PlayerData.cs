@@ -11,4 +11,5 @@ public class PlayerData : ScriptableObject
     public float turnSmoohtTime;
     public float jumpHeight = 5;
     public float gravity = -0.81f;
+    public float accelerationAnim;
 }
