@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 1000
   runSpeed: 3000
+  armAngularSpeed: 250
+  angularSpeed: 200
   acceleration: 5
   deceleration: 2
-  angularSpeed: 500
   jumpForce: 10
   accelerationAnim: 0.0001
+  activeArmAcceleration: 10

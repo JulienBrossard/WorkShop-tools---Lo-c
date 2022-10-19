@@ -36,8 +36,7 @@ public class MyPlayerController : MonoBehaviour
 
     private void Awake()
     {
-        inputs = new PlayerInputs();
-        inputs.Enable();
+        inputs = InputManager.instance.playerInputs;
     }
 
     private void Update()
@@ -54,7 +53,7 @@ public class MyPlayerController : MonoBehaviour
 
     void Movement()
     {
-        if (inputs.PlayerMovement.Move.ReadValue<Vector2>() != Vector2.zero && isGrounded)
+        if (inputs.PlayerMovement.Move.ReadValue<Vector2>() != Vector2.zero)
         {
             animator.SetBool("isIdle", false);
             if (inputs.PlayerMovement.Run.IsPressed())
@@ -91,7 +90,7 @@ public class MyPlayerController : MonoBehaviour
 
     void Rotate()
     {
-        if (inputs.PlayerMovement.Look.ReadValue<Vector2>() != Vector2.zero)
+        if (inputs.PlayerMovement.Look.ReadValue<Vector2>().x != 0)
         {
             rotate = inputs.PlayerMovement.Look.ReadValue<Vector2>();
             transform.Rotate(Vector3.up*playerData.angularSpeed*Time.deltaTime*Mathf.Sign(rotate.x));
