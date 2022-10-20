@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
@@ -13,6 +14,7 @@ public class MoveArm : MonoBehaviour
     [SerializeField] private Transform rightArmTarget;
     [SerializeField] private Transform leftArmTargetRotationCenter;
     [SerializeField] private Transform rightArmTargetRotationCenter;
+    [SerializeField] private Transform nextTargetPos;
     private Vector3 leftArmTargetSpawn;
     private Vector3 rightArmTargetSpawn;
 
@@ -54,21 +56,34 @@ public class MoveArm : MonoBehaviour
             rightArmRig.weight = Mathf.Lerp(rightArmRig.weight, 0, playerData.activeArmAcceleration * Time.deltaTime);
         }
 
-        if ((inputs.PlayerAction.ActiveRightArm.IsPressed() || inputs.PlayerAction.ActiveLeftArm.IsPressed()))
+        if ((inputs.PlayerAction.ActiveRightArm.IsPressed() || inputs.PlayerAction.ActiveLeftArm.IsPressed()) && rotate != Vector2.zero)
         {
             if (rotate != Vector2.zero)
             {
-                leftArmTarget.RotateAround(leftArmTargetRotationCenter.position, -transform.right, playerData.armAngularSpeed*Time.deltaTime*Mathf.Sign(rotate.y)); 
-                rightArmTarget.RotateAround(rightArmTargetRotationCenter.position, -transform.right, playerData.armAngularSpeed*Time.deltaTime*Mathf.Sign(rotate.y));   
+                nextTargetPos.position = leftArmTarget.position;
+                RotateAround(nextTargetPos, leftArmTargetRotationCenter.position, -transform.right, playerData.armAngularSpeed*Time.deltaTime*Mathf.Sign(rotate.y));
+                if ((nextTargetPos.localPosition.y<0.5f && nextTargetPos.localPosition.y>-0.1f) || (nextTargetPos.localPosition.y>0.5f && rotate.y>0) || (nextTargetPos.localPosition.y<-0.1f && rotate.y<0))
+                {
+                    RotateAround(leftArmTarget, leftArmTargetRotationCenter.position, transform.right, playerData.armAngularSpeed*Time.deltaTime*Mathf.Sign(rotate.y));
+                    RotateAround(rightArmTarget, rightArmTargetRotationCenter.position, transform.right, playerData.armAngularSpeed*Time.deltaTime*Mathf.Sign(rotate.y));
+                }
             }
         }
         
         else
         {
-            rightArmTarget.localPosition = rightArmTargetSpawn;
-            
-            leftArmTarget.localPosition = leftArmTargetSpawn;
+            rightArmTarget.localPosition = Vector3.Lerp(rightArmTarget.localPosition, rightArmTargetSpawn, Time.deltaTime);
+            leftArmTarget.localPosition = Vector3.Lerp(leftArmTarget.localPosition, leftArmTargetSpawn, Time.deltaTime);
+            rightArmTarget.eulerAngles = Vector3.zero;
+            leftArmTarget.eulerAngles = Vector3.zero;
         }
     }
-    
+
+    void RotateAround(Transform go, Vector3 point, Vector3 axis, float angle)
+    {
+        Vector3 position = go.position;
+        Vector3 vector3 = Quaternion.AngleAxis(angle, axis) * (position - point);
+        go.position = point + vector3;
+    }
+
 }

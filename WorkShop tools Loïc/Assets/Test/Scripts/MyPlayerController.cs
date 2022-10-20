@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody))]
 public class MyPlayerController : MonoBehaviour
@@ -23,9 +25,15 @@ public class MyPlayerController : MonoBehaviour
     [Header("Animations")] 
     [SerializeField]
     private Animator animator;
-
     [SerializeField]
     float velocityAnim;
+
+    [Header("Camera")] 
+    [SerializeField] private Transform cameraRotationCenter;
+    [SerializeField] Transform cameraRotationInitialisation;
+
+    [Header("Spin")] 
+    [SerializeField] private Rig spinRig;
     
     private PlayerInputs inputs;
     private Vector2 movement;
@@ -34,9 +42,10 @@ public class MyPlayerController : MonoBehaviour
     private float speed;
     private float currentSpeed;
 
-    private void Awake()
+    private void Start()
     {
         inputs = InputManager.instance.playerInputs;
+        cameraRotationCenter.eulerAngles = Vector3.zero;
     }
 
     private void Update()
@@ -72,15 +81,34 @@ public class MyPlayerController : MonoBehaviour
             if (Physics.Raycast(foot, transform.forward, maxDistanceStairs, layer) && !Physics.Raycast(middle, transform.forward, maxDistanceStairs, layer))
             {
                 transform.position += Vector3.up * 10;
+                transform.position.normalized
             }
             
-            animator.SetFloat("Speed", Mathf.SmoothDamp(animator.GetFloat("Speed"), currentSpeed, ref velocityAnim, playerData.accelerationAnim));
+            Debug.Log(movement);
+
+            if (movement.y != 0)
+            {
+                animator.SetFloat("Speed", Mathf.SmoothDamp(animator.GetFloat("Speed"), currentSpeed * Mathf.Abs(Mathf.Sign(movement.y)), ref velocityAnim, playerData.accelerationAnim));
+            }
+            else
+            {
+                animator.SetFloat("Speed", Mathf.SmoothDamp(animator.GetFloat("Speed"), 0, ref velocityAnim, playerData.accelerationAnim));
+            }
+            if (movement.x != 0)
+            {
+                animator.SetFloat("XSpeed", Mathf.SmoothDamp(animator.GetFloat("XSpeed"), currentSpeed * Mathf.Sign(movement.x), ref velocityAnim, playerData.accelerationAnim));
+            }
+            else
+            {
+                animator.SetFloat("XSpeed", Mathf.SmoothDamp(animator.GetFloat("XSpeed"), 0, ref velocityAnim, playerData.accelerationAnim));
+            }
         }
         else if(rb.velocity.x != 0 || rb.velocity.z != 0 )
         {
             currentSpeed = Mathf.Lerp(currentSpeed, 0, Time.deltaTime * playerData.deceleration);
             rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero + new Vector3(0, rb.velocity.y, 0), Time.deltaTime * playerData.deceleration);
-            animator.SetFloat("Speed", Mathf.SmoothDamp(animator.GetFloat("Speed"), currentSpeed, ref velocityAnim, playerData.accelerationAnim));
+            animator.SetFloat("Speed", Mathf.SmoothDamp(animator.GetFloat("Speed"), 0, ref velocityAnim, playerData.accelerationAnim));
+            animator.SetFloat("XSpeed", Mathf.SmoothDamp(animator.GetFloat("XSpeed"), 0, ref velocityAnim, playerData.accelerationAnim));
         }
         else if(isGrounded)
         {
@@ -94,6 +122,25 @@ public class MyPlayerController : MonoBehaviour
         {
             rotate = inputs.PlayerMovement.Look.ReadValue<Vector2>();
             transform.Rotate(Vector3.up*playerData.angularSpeed*Time.deltaTime*Mathf.Sign(rotate.x));
+        }
+
+        if (inputs.PlayerMovement.Look.ReadValue<Vector2>().y != 0)
+        {
+            rotate = inputs.PlayerMovement.Look.ReadValue<Vector2>();
+            if ((cameraRotationCenter.eulerAngles.x > -1 && cameraRotationCenter.eulerAngles.x < playerData.maxAngle) || (cameraRotationCenter.eulerAngles.x > 350 && cameraRotationCenter.eulerAngles.x < 360))
+            {
+                cameraRotationCenter.Rotate(Vector3.right*playerData.angularSpeedCamera*Time.deltaTime*Mathf.Sign(rotate.y));
+            }
+
+            if ((cameraRotationCenter.eulerAngles.x > -1 && cameraRotationCenter.eulerAngles.x < playerData.maxAngle))
+            {
+                spinRig.weight = cameraRotationCenter.eulerAngles.x / playerData.maxAngle;
+            }
+        }
+        else
+        {
+            cameraRotationCenter.rotation = Quaternion.Lerp(cameraRotationCenter.rotation, cameraRotationInitialisation.rotation, Time.deltaTime);
+            spinRig.weight = Mathf.Lerp(spinRig.weight, 0, Time.deltaTime);
         }
     }
 
@@ -118,6 +165,4 @@ public class MyPlayerController : MonoBehaviour
             animator.SetBool("isIdle", false);
         }
     }
-
-
 }

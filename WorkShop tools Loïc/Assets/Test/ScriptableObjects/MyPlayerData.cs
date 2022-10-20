@@ -9,6 +9,7 @@ public class MyPlayerData : ScriptableObject
     public float walkSpeed;
     public float runSpeed;
     public float armAngularSpeed;
+    public float angularSpeedCamera;
     [Header("Acceleration")]
     public float angularSpeed;
     public float acceleration;
@@ -19,4 +20,6 @@ public class MyPlayerData : ScriptableObject
     public float accelerationAnim;
     [Header("Arms")]
     public float activeArmAcceleration;
+    [Header("Rotation")] 
+    public float maxAngle;
 }
