@@ -2,6 +2,6 @@ using UnityEngine;
 
 public interface ITakeable
 {
-    public void Take(Transform hand);
+    public void Take(Rigidbody hand);
     public void LetGo();
 }

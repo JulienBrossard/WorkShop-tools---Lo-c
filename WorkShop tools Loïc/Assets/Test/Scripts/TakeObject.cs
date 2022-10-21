@@ -6,6 +6,7 @@ public class TakeObject : MonoBehaviour
 {
     private PlayerInputs inputs;
     private InputAction action;
+    [SerializeField] private Rigidbody hand;
 
     enum Arms
     {
@@ -41,7 +42,7 @@ public class TakeObject : MonoBehaviour
     {
         if (other.GetComponent<ITakeable>() != null && action.IsPressed() && currentObject == null)
         {
-            other.GetComponent<ITakeable>().Take(transform);
+            other.GetComponent<ITakeable>().Take(hand);
             currentObject = other.transform;
             previousParent = other.transform.parent;
         }

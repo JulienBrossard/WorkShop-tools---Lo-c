@@ -123,7 +123,7 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""2D Vector"",
                     ""id"": ""11522598-cba2-44b6-bc07-e7c94324c427"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(mode=2)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -317,6 +317,15 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Ragdoll"",
+                    ""type"": ""Button"",
+                    ""id"": ""7d7775eb-2252-4e47-8f32-215ee3580c02"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -429,6 +438,17 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
                     ""action"": ""ActiveLeftArm"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""32a43b6f-f362-44c9-8534-4e18d8e0e264"",
+                    ""path"": ""<XInputController>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Ragdoll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -463,6 +483,7 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
         m_PlayerAction_MoveArm = m_PlayerAction.FindAction("MoveArm", throwIfNotFound: true);
         m_PlayerAction_ActiveRightArm = m_PlayerAction.FindAction("ActiveRightArm", throwIfNotFound: true);
         m_PlayerAction_ActiveLeftArm = m_PlayerAction.FindAction("ActiveLeftArm", throwIfNotFound: true);
+        m_PlayerAction_Ragdoll = m_PlayerAction.FindAction("Ragdoll", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -582,6 +603,7 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerAction_MoveArm;
     private readonly InputAction m_PlayerAction_ActiveRightArm;
     private readonly InputAction m_PlayerAction_ActiveLeftArm;
+    private readonly InputAction m_PlayerAction_Ragdoll;
     public struct PlayerActionActions
     {
         private @PlayerInputs m_Wrapper;
@@ -589,6 +611,7 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
         public InputAction @MoveArm => m_Wrapper.m_PlayerAction_MoveArm;
         public InputAction @ActiveRightArm => m_Wrapper.m_PlayerAction_ActiveRightArm;
         public InputAction @ActiveLeftArm => m_Wrapper.m_PlayerAction_ActiveLeftArm;
+        public InputAction @Ragdoll => m_Wrapper.m_PlayerAction_Ragdoll;
         public InputActionMap Get() { return m_Wrapper.m_PlayerAction; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -607,6 +630,9 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
                 @ActiveLeftArm.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnActiveLeftArm;
                 @ActiveLeftArm.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnActiveLeftArm;
                 @ActiveLeftArm.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnActiveLeftArm;
+                @Ragdoll.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnRagdoll;
+                @Ragdoll.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnRagdoll;
+                @Ragdoll.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnRagdoll;
             }
             m_Wrapper.m_PlayerActionActionsCallbackInterface = instance;
             if (instance != null)
@@ -620,6 +646,9 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
                 @ActiveLeftArm.started += instance.OnActiveLeftArm;
                 @ActiveLeftArm.performed += instance.OnActiveLeftArm;
                 @ActiveLeftArm.canceled += instance.OnActiveLeftArm;
+                @Ragdoll.started += instance.OnRagdoll;
+                @Ragdoll.performed += instance.OnRagdoll;
+                @Ragdoll.canceled += instance.OnRagdoll;
             }
         }
     }
@@ -645,5 +674,6 @@ public partial class @PlayerInputs : IInputActionCollection2, IDisposable
         void OnMoveArm(InputAction.CallbackContext context);
         void OnActiveRightArm(InputAction.CallbackContext context);
         void OnActiveLeftArm(InputAction.CallbackContext context);
+        void OnRagdoll(InputAction.CallbackContext context);
     }
 }

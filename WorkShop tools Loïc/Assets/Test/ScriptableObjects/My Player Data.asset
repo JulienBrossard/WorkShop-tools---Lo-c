@@ -18,8 +18,8 @@ MonoBehaviour:
   angularSpeedCamera: 50
   angularSpeed: 200
   acceleration: 5
-  deceleration: 2
-  jumpForce: 10
+  deceleration: 10
+  jumpForce: 5
   accelerationAnim: 0.0001
   activeArmAcceleration: 10
   maxAngle: 60
